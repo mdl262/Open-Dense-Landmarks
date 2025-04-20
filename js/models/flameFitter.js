@@ -11,7 +11,7 @@ export async function createFitter(flameModel) {
         lr: 0.1,
         eps: 1e-6,
         currentParams: new ort.Tensor('float32', Float32Array.from({ length: 404 }, (_, i) => (i === 403 ? 154 : 0)), [404]),
-        v: new ort.Tensor('float32', new Float32Array(404).fill(0.01), [404]),
+        v: new ort.Tensor('float32', new Float32Array(404).fill(0.0), [404]),
         V0: flameModel.V0,
         S: flameModel.S,
         E: flameModel.E,

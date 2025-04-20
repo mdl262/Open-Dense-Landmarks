@@ -3,9 +3,12 @@ export async function initLandmarkModel() {
         '../assets/landmark_models/simplified_model.onnx',
         { 
             executionProviders: ['wasm','cpu'],
-            graphOptimizationLevel: "all",
+            graphOptimizationLevel: "extended",
             enableCpuMemArena: true,
-            enableMemPattern: true
+            enableMemPattern: true,
+            //executionMode: 'parallel',
+            //intraOpNumThreads: 2,
+            //enableProfiling: true
         }
     );
     console.log("✅ ONNX model loaded");
@@ -13,6 +16,8 @@ export async function initLandmarkModel() {
 }
 
 export async function runLandmarkModel(tensor, session) {
+    //await session.startProfiling();
     const results = await session.run({ input: tensor });
+    //session.endProfiling().then(console.log)
     return results.output.data;
 }

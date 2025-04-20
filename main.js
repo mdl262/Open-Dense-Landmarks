@@ -5,7 +5,7 @@ import { initBlazeFace } from './js/models/blazeface.js';
 import { initLandmarkModel } from './js/models/landmarkModel.js';
 import { createFitter } from './js/models/flameFitter.js';
 import { AppState } from './state.js';
-import { processFrame, runFitter } from './js/pipeline/facePipeline.js';
+import { processFrame} from './js/pipeline/facePipeline.js';
 import { setupCamera } from './js/utils/visualization.js';
 
 AppState.canvasContext = document.getElementById('overlay').getContext('2d');
@@ -15,6 +15,7 @@ const faceDetector = await initBlazeFace();
 const landmarkModel = await initLandmarkModel();
 
 const fpsDisplay = document.getElementById('fps-display');
+let fps = -1
 let lastTimestamp = performance.now();
 
 // Load FLAME
@@ -35,7 +36,7 @@ document.getElementById('flameUpload').addEventListener('change', async (e) => {
 async function renderLoop() {
     await processFrame(video, AppState.canvasContext, faceDetector, landmarkModel);
     const now = performance.now();
-    const fps = 1000 / (now - lastTimestamp);
+    fps = fps*0.9 + 0.1 * (1000 / (now - lastTimestamp));
     fpsDisplay.textContent = `FPS: ${fps.toFixed(1)}`;
     lastTimestamp = now;
     requestAnimationFrame(renderLoop);

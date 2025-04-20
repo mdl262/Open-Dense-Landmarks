@@ -6,6 +6,20 @@ import { WebGLCropResizer } from "../utils/cropper.js";
 
 const cropper = new WebGLCropResizer(document.getElementById('webcam'));
 
+let smoothedBox = null; // ✅ persist across frames
+const alpha = 0.3;       // smoothing factor
+
+function smoothBox(newBox, prevBox, alpha = 0.3) {
+    if (!prevBox) return newBox;
+
+    return {
+        xMin: alpha * newBox.xMin + (1 - alpha) * prevBox.xMin,
+        yMin: alpha * newBox.yMin + (1 - alpha) * prevBox.yMin,
+        xMax: alpha * newBox.xMax + (1 - alpha) * prevBox.xMax,
+        yMax: alpha * newBox.yMax + (1 - alpha) * prevBox.yMax
+    };
+}
+
 // video, AppState.canvasContext, faceDetector, landmarkModel
 export async function processFrame(video, ctx, fd, lm) {
     const detections = await fd.detectForVideo(video, performance.now()).detections;
@@ -13,21 +27,15 @@ export async function processFrame(video, ctx, fd, lm) {
     if (!valid) return;
 
     const box = getCropBoxFromDetection(detections[0], video.videoWidth, video.videoHeight);
-    const cropImage = await cropper.crop(box);
+    smoothedBox = smoothBox(box, smoothedBox, alpha); // ✅ update the persistent value
+
+    const cropImage = await cropper.crop(smoothedBox); // ✅ use the smoothed box
     const landmarksFlat = await runLandmarkModel(cropImage, lm); // [565*2]
-    // landmarks, cropBox, scaleX, scaleY, ctx
-    drawLandmarks(ctx, landmarksFlat, box);
-    AppState.landmarks ??= new ort.Tensor('float32', landmarksFlat, [565*3])
+
+    drawLandmarks(ctx, landmarksFlat, smoothedBox);
+    AppState.landmarks = new ort.Tensor('float32', landmarksFlat, [565 * 3]);
 
     if (AppState.fitter != null) {
-        await runFitter(AppState.landmarks);
+        await AppState.fitter.step(AppState.landmarks);
     }
-}
-
-export async function runFitter(landmarks) {
-    if (!!landmarks) {
-        const projected = await AppState.fitter.step(AppState.landmarks);
-        return projected;
-    }
-    return;
 }
