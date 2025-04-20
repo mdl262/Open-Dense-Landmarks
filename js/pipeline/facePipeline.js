@@ -7,16 +7,16 @@ import { WebGLCropResizer } from "../utils/cropper.js";
 const cropper = new WebGLCropResizer(document.getElementById('webcam'));
 
 let smoothedBox = null; // ✅ persist across frames
-const alpha = 0.3;       // smoothing factor
+const alpha = 1;       // smoothing factor
 
 function smoothBox(newBox, prevBox, alpha = 0.3) {
     if (!prevBox) return newBox;
 
     return {
-        xMin: alpha * newBox.xMin + (1 - alpha) * prevBox.xMin,
-        yMin: alpha * newBox.yMin + (1 - alpha) * prevBox.yMin,
-        xMax: alpha * newBox.xMax + (1 - alpha) * prevBox.xMax,
-        yMax: alpha * newBox.yMax + (1 - alpha) * prevBox.yMax
+        x: Math.floor(alpha * newBox.x + (1 - alpha) * prevBox.x),
+        y: Math.floor(alpha * newBox.y + (1 - alpha) * prevBox.y),
+        width: Math.floor(alpha * newBox.width + (1 - alpha) * prevBox.width),
+        height: Math.floor(alpha * newBox.height + (1 - alpha) * prevBox.height)
     };
 }
 
