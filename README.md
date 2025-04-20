@@ -58,3 +58,20 @@ This project uses the **[FLAME](https://flame.is.tue.mpg.de/)** 3D face model:
 
 Please note: FLAME is distributed under a non-commercial academic license and is not bundled with this project. Users are responsible for obtaining the FLAME model from the official source.
 
+This project uses a modified version of BlazeFace, a lightweight and real-time face detection model developed by Google Research and part of the MediaPipe framework:
+
+> Bazarevsky, Valentin, Kartynnik, Yury, Vakunov, Andrey, Tkachenka, Ivan, Grundmann, Matthias.
+> **BlazeFace: Sub-millisecond Neural Face Detection on Mobile GPUs.**
+> in *Google AI Blog, 2019*.
+
+```bibtex
+@misc{blazeface2019,
+  title={BlazeFace: Sub-millisecond Neural Face Detection on Mobile GPUs},
+  author={Bazarevsky, Valentin and Kartynnik, Yury and Vakunov, Andrey and Tkachenka, Ivan and Grundmann, Matthias},
+  year={2019},
+  howpublished={Google AI Blog},
+  url={https://ai.googleblog.com/2019/08/on-device-real-time-face-detection-with.html}
+}
+```
+BlazeFace is distributed under the Apache 2.0 license as part of MediaPipe.
+If you use BlazeFace in your work, please credit the authors appropriately.
